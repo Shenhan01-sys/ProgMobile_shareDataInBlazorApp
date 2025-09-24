@@ -1,0 +1,81 @@
+﻿using Microsoft.Extensions.Logging;
+using PizzaList.Services;
+using PizzaList.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;  // ← TAMBAHKAN INI untuk Debug.WriteLine
+
+namespace PizzaList
+{
+    public static class MauiProgram
+    {
+        public static MauiApp CreateMauiApp()
+        {
+            var builder = MauiApp.CreateBuilder();
+            builder
+                .UseMauiApp<App>()
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                });
+
+            builder.Services.AddMauiBlazorWebView();
+            
+            // Add Entity Framework
+            builder.Services.AddDbContext<PizzaStoreContext>(options =>
+                options.UseSqlite("Data Source=pizza.db"));
+            
+            // Add PizzaService (Scoped untuk Entity Framework)
+            builder.Services.AddScoped<PizzaService>();
+
+#if DEBUG
+            builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Logging.AddDebug();
+#endif
+
+            var app = builder.Build();
+
+            // Initialize database
+            try
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<PizzaStoreContext>();
+                    
+                    Debug.WriteLine("📋 Mengecek koneksi database...");
+                    
+                    // Pastikan database bisa diakses
+                    bool canConnect = db.Database.CanConnect();
+                    Debug.WriteLine($"🔗 Database connection: {(canConnect ? "✅ OK" : "❌ GAGAL")}");  // ← TUTUP STRING DENGAN "
+                    
+                    // Create database jika belum ada
+                    bool created = db.Database.EnsureCreated();
+                    Debug.WriteLine($"🗄️  Database created: {created}");  // ← TUTUP STRING DENGAN "
+                    
+                    // Cek apakah ada data
+                    int existingCount = db.SetPizza.Count();
+                    Debug.WriteLine($"📊 Existing pizza count: {existingCount}");  // ← TUTUP STRING DENGAN "
+                    
+                    if (created || existingCount == 0)
+                    {
+                        Debug.WriteLine("🌱 Seeding database dengan SeedPizza...");
+                        SeedPizza.Initialize(db);
+                        
+                        int newCount = db.SetPizza.Count();
+                        Debug.WriteLine($"✅ Seeding selesai. Total pizza: {newCount}");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("ℹ️  Database sudah berisi data, skip seeding");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error tapi jangan crash app
+                Debug.WriteLine($"❌ Database initialization error: {ex.Message}");
+            }
+
+            return app;
+        }
+    }
+}

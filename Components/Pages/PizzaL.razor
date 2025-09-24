@@ -1,0 +1,97 @@
+@page "/pizza"
+@using PizzaList.Models
+@using PizzaList.Services
+@inject PizzaService PizzaSvc
+
+<PageTitle>List of Pizza</PageTitle>
+
+<h1>Daftar Pizza Kami</h1>
+
+<p>Berikut adalah menu pizza yang tersedia hari ini.</p>
+
+@if (pizzas == null)
+{
+    <p><em>Memuat daftar pizza...</em></p>
+}
+else
+{
+    <div class="pizza-container">
+        @foreach (var pizza in pizzas)
+        {
+            <div class="pizza-card" style="background-image: url('@pizza.ImageUrl'); background-size: cover; background-position: center;">
+                <div class="pizza-content">
+                    <h3>@pizza.Name</h3>
+                    <p>@pizza.Description</p>
+                    <span class="price">$@pizza.BasePrice.ToString("F")</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .pizza-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    .pizza-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+    .pizza-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.7) 100%);
+        backdrop-filter: blur(1px);
+        z-index: 1;
+    }
+    .pizza-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        z-index: 2;
+        color: white;
+    }
+    .pizza-content h3 {
+        margin: 0 0 0.5rem 0;
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .pizza-content p {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+
+.price {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #FFD700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+</style>
+
+@code {
+    private List<Pizza>? pizzas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pizzas = await PizzaSvc.GetPizzasAsync();  // Gunakan Entity Framework
+    }
+}
