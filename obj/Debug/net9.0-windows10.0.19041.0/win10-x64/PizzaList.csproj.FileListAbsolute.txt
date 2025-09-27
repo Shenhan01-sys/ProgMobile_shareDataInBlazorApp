@@ -681,3 +681,4 @@ C:\Users\hansg\source\repos\PizzaList\PizzaList\bin\Debug\net9.0-windows10.0.190
 C:\Users\hansg\source\repos\PizzaList\PizzaList\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\hansg\source\repos\PizzaList\PizzaList\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\hansg\source\repos\PizzaList\PizzaList\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\e_sqlite3.dll
+C:\Users\hansg\source\repos\PizzaList\PizzaList\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\PizzaList.sourcelink.json

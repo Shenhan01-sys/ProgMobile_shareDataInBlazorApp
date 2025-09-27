@@ -21,10 +21,10 @@ namespace PizzaList.Services
             {
                 Debug.WriteLine("🔍 Mencoba mengambil data dari database...");
                 
-                // Ambil data tanpa sorting dulu (untuk menghindari masalah decimal di SQLite)
+                // Ambil data TANPA sorting untuk menghindari error SQLite decimal
                 var pizzas = await _context.SetPizza.ToListAsync();
                 
-                // Sort di client side (LINQ to Objects) setelah data diambil
+                // Sort di client side (LINQ to Objects)
                 var sortedPizzas = pizzas.OrderByDescending(p => p.BasePrice).ToList();
                 
                 Debug.WriteLine($"✅ Berhasil mengambil {sortedPizzas.Count} pizza dari database");
@@ -33,7 +33,7 @@ namespace PizzaList.Services
                     Debug.WriteLine($"   - {pizza.Name} (${pizza.BasePrice})");
                 }
                 
-                return pizzas;
+                return sortedPizzas;  // ← RETURN sortedPizzas, BUKAN pizzas!
             }
             catch (Exception ex)
             {
@@ -51,12 +51,15 @@ namespace PizzaList.Services
             try
             {
                 Debug.WriteLine("🔍 Mencoba mengambil data dari database (sync)...");
-                var pizzas = _context.SetPizza
-                    .OrderByDescending(p => p.BasePrice)
-                    .ToList();
                 
-                Debug.WriteLine($"✅ Berhasil mengambil {pizzas.Count} pizza dari database");
-                return pizzas;
+                // Ambil data TANPA sorting dulu
+                var pizzas = _context.SetPizza.ToList();
+                
+                // Sort di client side
+                var sortedPizzas = pizzas.OrderByDescending(p => p.BasePrice).ToList();
+                
+                Debug.WriteLine($"✅ Berhasil mengambil {sortedPizzas.Count} pizza dari database");
+                return sortedPizzas;
             }
             catch (Exception ex)
             {

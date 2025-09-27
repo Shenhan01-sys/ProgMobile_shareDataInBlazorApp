@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PizzaList")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+3ecc197f86bc86e18e4af3c6ce767cddcb2dc61f")]
 [assembly: System.Reflection.AssemblyProductAttribute("PizzaList")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PizzaList")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

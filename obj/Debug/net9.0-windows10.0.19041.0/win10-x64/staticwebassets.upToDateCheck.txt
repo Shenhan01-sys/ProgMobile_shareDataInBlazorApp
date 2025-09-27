@@ -1,6 +1,7 @@
 wwwroot\css\app.css
 wwwroot\css\bootstrap\bootstrap.min.css
 wwwroot\css\bootstrap\bootstrap.min.css.map
+wwwroot\index.html
 wwwroot\img\pizzas\bacon.jpg
 wwwroot\img\pizzas\brit.jpg
 wwwroot\img\pizzas\cheese.jpg
@@ -9,7 +10,6 @@ wwwroot\img\pizzas\meaty.jpg
 wwwroot\img\pizzas\mushroom.jpg
 wwwroot\img\pizzas\pepperoni.jpg
 wwwroot\img\pizzas\salad.jpg
-wwwroot\index.html
 C:\Users\hansg\source\repos\PizzaList\PizzaList\wwwroot\css\app.css
 C:\Users\hansg\source\repos\PizzaList\PizzaList\wwwroot\css\bootstrap\bootstrap.min.css
 C:\Users\hansg\source\repos\PizzaList\PizzaList\wwwroot\css\bootstrap\bootstrap.min.css.map
