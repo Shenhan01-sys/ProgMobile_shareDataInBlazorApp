@@ -2,7 +2,7 @@
 using PizzaList.Services;
 using PizzaList.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;  // ← TAMBAHKAN INI untuk Debug.WriteLine
+using System.Diagnostics;
 
 namespace PizzaList
 {
@@ -24,8 +24,10 @@ namespace PizzaList
             builder.Services.AddDbContext<PizzaStoreContext>(options =>
                 options.UseSqlite("Data Source=pizza.db"));
             
-            // Add PizzaService (Scoped untuk Entity Framework)
+            // Add Services
             builder.Services.AddScoped<PizzaService>();
+            builder.Services.AddScoped<PizzaSalesState>();
+            builder.Services.AddScoped<OrderState>(); // ← Add OrderState service
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
@@ -43,17 +45,14 @@ namespace PizzaList
                     
                     Debug.WriteLine("📋 Mengecek koneksi database...");
                     
-                    // Pastikan database bisa diakses
                     bool canConnect = db.Database.CanConnect();
-                    Debug.WriteLine($"🔗 Database connection: {(canConnect ? "✅ OK" : "❌ GAGAL")}");  // ← TUTUP STRING DENGAN "
+                    Debug.WriteLine($"🔗 Database connection: {(canConnect ? "✅ OK" : "❌ GAGAL")}");
                     
-                    // Create database jika belum ada
                     bool created = db.Database.EnsureCreated();
-                    Debug.WriteLine($"🗄️  Database created: {created}");  // ← TUTUP STRING DENGAN "
+                    Debug.WriteLine($"🗄️  Database created: {created}");
                     
-                    // Cek apakah ada data
                     int existingCount = db.SetPizza.Count();
-                    Debug.WriteLine($"📊 Existing pizza count: {existingCount}");  // ← TUTUP STRING DENGAN "
+                    Debug.WriteLine($"📊 Existing pizza count: {existingCount}");
                     
                     if (created || existingCount == 0)
                     {
@@ -71,7 +70,6 @@ namespace PizzaList
             }
             catch (Exception ex)
             {
-                // Log error tapi jangan crash app
                 Debug.WriteLine($"❌ Database initialization error: {ex.Message}");
             }
 

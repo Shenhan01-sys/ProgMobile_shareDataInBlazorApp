@@ -2,12 +2,28 @@
 @using PizzaList.Models
 @using PizzaList.Services
 @inject PizzaService PizzaSvc
+@inject PizzaSalesState SalesState
+@inject OrderState OrderState
+@implements IDisposable
 
 <PageTitle>List of Pizza</PageTitle>
 
-<h1>Daftar Pizza Kami</h1>
-
-<p>Berikut adalah menu pizza yang tersedia hari ini.</p>
+<div class="header-section">
+    <h1>Daftar Pizza Kami</h1>
+    <p>Berikut adalah menu pizza yang tersedia hari ini.</p>
+    
+    <!-- Sales Statistics using AppState -->
+    <div class="sales-stats">
+        <div class="stat-card">
+            <span class="stat-number">@SalesState.PizzasSoldToday</span>
+            <span class="stat-label">Pizza Terjual Hari Ini</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">@SalesState.TotalRevenue.ToString("C")</span>
+            <span class="stat-label">Total Pendapatan</span>
+        </div>
+    </div>
+</div>
 
 @if (pizzas == null)
 {
@@ -15,83 +31,172 @@
 }
 else
 {
-    <div class="pizza-container">
-        @foreach (var pizza in pizzas)
+    <!-- Cascading Value untuk Special Offer -->
+    <CascadingValue Name="SpecialOffer" Value="@currentSpecialOffer">
+        
+        <!-- Special Offer Banner menggunakan Cascading Parameter -->
+        <SpecialOfferBanner />
+        
+        <!-- Order Summary (shows current order) -->
+        <OrderSummary />
+        
+        <div class="pizza-container">
+            @foreach (var pizza in pizzas)
+            {
+                <!-- Menggunakan Component Parameters dengan Configure option -->
+                <PizzaCard 
+                    Pizza="@pizza" 
+                    ShowBuyButton="true" 
+                    OnBuyClick="HandleQuickPurchase"
+                    OnConfigureClick="HandleConfigurePizza" />
+            }
+        </div>
+        
+        <!-- Recent Sales Section -->
+        @if (SalesState.RecentSales.Any())
         {
-            <div class="pizza-card" style="background-image: url('@pizza.ImageUrl'); background-size: cover; background-position: center;">
-                <div class="pizza-content">
-                    <h3>@pizza.Name</h3>
-                    <p>@pizza.Description</p>
-                    <span class="price">$@pizza.BasePrice.ToString("F")</span>
-                </div>
+            <div class="recent-sales">
+                <h3>Penjualan Terbaru</h3>
+                <ul>
+                    @foreach (var sale in SalesState.RecentSales.Take(5))
+                    {
+                        <li>@sale</li>
+                    }
+                </ul>
             </div>
         }
-    </div>
+    </CascadingValue>
+}
+
+<!-- Configuration Dialog -->
+@if (OrderState.ShowingConfigureDialog && OrderState.ConfiguringPizza != null)
+{
+    <ConfigurePizzaDialog 
+        Pizza="OrderState.ConfiguringPizza"
+        OnCancel="OrderState.CancelConfigurePizzaDialog"
+        OnConfirm="HandleConfirmPizza"
+        OnSizeChange="HandleSizeChange" />
 }
 
 <style>
+    .header-section {
+        margin-bottom: 2rem;
+    }
+    
+    .sales-stats {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        min-width: 150px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .stat-number {
+        display: block;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
     .pizza-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1rem;
+        margin-bottom: 2rem;
     }
-    .pizza-card {
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding: 0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        position: relative;
-        height: 200px;
-        overflow: hidden;
-    }
-    .pizza-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.7) 100%);
-        backdrop-filter: blur(1px);
-        z-index: 1;
-    }
-    .pizza-content {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+    
+    .recent-sales {
+        background: #f8f9fa;
         padding: 1rem;
-        z-index: 2;
-        color: white;
+        border-radius: 8px;
+        margin-top: 2rem;
     }
-    .pizza-content h3 {
-        margin: 0 0 0.5rem 0;
-        font-weight: bold;
-        font-size: 1.2rem;
-        color: white;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    
+    .recent-sales h3 {
+        margin-top: 0;
+        color: #495057;
     }
-
-    .pizza-content p {
-        margin: 0 0 0.5rem 0;
-        font-size: 0.9rem;
-        color: white;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    
+    .recent-sales ul {
+        list-style: none;
+        padding: 0;
     }
-
-.price {
-    font-weight: bold;
-    font-size: 1.1rem;
-    color: #FFD700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    
+    .recent-sales li {
+        padding: 0.5rem;
+        border-bottom: 1px solid #dee2e6;
+        color: #6c757d;
+    }
+    
+    .recent-sales li:last-child {
+        border-bottom: none;
     }
 </style>
 
 @code {
     private List<Pizza>? pizzas;
+    private string currentSpecialOffer = "Flash Sale: 20% off semua pizza!";
 
     protected override async Task OnInitializedAsync()
     {
-        pizzas = await PizzaSvc.GetPizzasAsync();  // Gunakan Entity Framework
+        pizzas = await PizzaSvc.GetPizzasAsync();
+        
+        // Subscribe to state changes
+        SalesState.OnChange += StateHasChanged;
+        OrderState.OnChange += StateHasChanged;
+    }
+
+    private async Task HandleQuickPurchase(Pizza pizza)
+    {
+        // Quick purchase - add to sales directly
+        SalesState.AddSale(pizza.Name, pizza.BasePrice);
+        
+        // Show confirmation
+        await Task.Delay(100);
+        StateHasChanged();
+    }
+
+    private void HandleConfigurePizza(Pizza pizza)
+    {
+        // Open configuration dialog
+        OrderState.ShowConfigurePizzaDialog(pizza);
+    }
+
+    private void HandleConfirmPizza()
+    {
+        // Add configured pizza to order
+        OrderState.ConfirmConfigurePizzaDialog();
+        
+        // Also add to sales statistics
+        if (OrderState.Order.Pizzas.Any())
+        {
+            var lastPizza = OrderState.Order.Pizzas.Last();
+            SalesState.AddSale($"{lastPizza.Name} ({lastPizza.Size}\")", lastPizza.GetTotalPrice());
+        }
+    }
+
+    private void HandleSizeChange(int newSize)
+    {
+        // Update pizza size through OrderState
+        OrderState.UpdatePizzaSize(newSize);
+    }
+
+    public void Dispose()
+    {
+        SalesState.OnChange -= StateHasChanged;
+        OrderState.OnChange -= StateHasChanged;
     }
 }

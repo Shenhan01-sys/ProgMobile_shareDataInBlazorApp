@@ -1,0 +1,145 @@
+@using PizzaList.Models
+
+<div class="pizza-card" style="background-image: url('@Pizza.ImageUrl'); background-size: cover; background-position: center;">
+    <div class="pizza-card-overlay"></div>
+    <div class="pizza-content">
+        <h3>@Pizza.Name</h3>
+        <p>@Pizza.Description</p>
+        <span class="price">@Pizza.GetFormattedBasePrice()</span>
+        @if (ShowBuyButton)
+        {
+            <div class="button-group">
+                <button class="buy-button quick-buy" @onclick="HandleQuickBuy">
+                    ?? Quick Buy
+                </button>
+                <button class="buy-button configure-buy" @onclick="HandleConfigureBuy">
+                    ?? Configure
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .pizza-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+    
+    .pizza-card:hover {
+        transform: scale(1.05);
+    }
+    
+    .pizza-card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, 
+            rgba(0,0,0,0.3) 0%, 
+            rgba(0,0,0,0.5) 50%, 
+            rgba(0,0,0,0.7) 100%);
+        backdrop-filter: blur(1px);
+        z-index: 1;
+    }
+    
+    .pizza-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        z-index: 2;
+        color: white;
+    }
+    
+    .pizza-content h3 {
+        margin: 0 0 0.5rem 0;
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .pizza-content p {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+
+    .price {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #FFD700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        display: block;
+        margin-bottom: 0.75rem;
+    }
+    
+    .button-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .buy-button {
+        flex: 1;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: bold;
+        transition: background 0.2s ease;
+    }
+    
+    .quick-buy {
+        background: #28a745;
+        color: white;
+    }
+    
+    .quick-buy:hover {
+        background: #218838;
+    }
+    
+    .configure-buy {
+        background: #007bff;
+        color: white;
+    }
+    
+    .configure-buy:hover {
+        background: #0056b3;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public Pizza Pizza { get; set; } = new();
+
+    [Parameter]
+    public bool ShowBuyButton { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<Pizza> OnBuyClick { get; set; }
+
+    [Parameter]
+    public EventCallback<Pizza> OnConfigureClick { get; set; }
+
+    private async Task HandleQuickBuy()
+    {
+        await OnBuyClick.InvokeAsync(Pizza);
+    }
+
+    private async Task HandleConfigureBuy()
+    {
+        await OnConfigureClick.InvokeAsync(Pizza);
+    }
+}

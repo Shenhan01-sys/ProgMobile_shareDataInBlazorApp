@@ -1,0 +1,219 @@
+@using PizzaList.Models
+@using PizzaList.Services
+
+<div class="dialog-container">
+    <div class="dialog">
+        <div class="dialog-title">
+            <h2>@Pizza.Name</h2>
+            @Pizza.Description
+        </div>
+        <form class="dialog-body">
+            <div class="size-section">
+                <label>Size:</label>
+                <input type="range" 
+                       min="@Pizza.MinimumSize" 
+                       max="@Pizza.MaximumSize" 
+                       step="1" 
+                       @bind="@Pizza.Size"
+                       @oninput="OnSizeChanged" />
+                <span class="size-label">
+                    @(Pizza.Size)" (@Pizza.GetFormattedTotalPrice())
+                </span>
+            </div>
+            
+            <div class="pizza-preview">
+                <img src="@Pizza.ImageUrl" alt="@Pizza.Name" class="pizza-image" />
+            </div>
+        </form>
+
+        <div class="dialog-buttons">
+            <button class="btn btn-secondary mr-auto" @onclick="OnCancel">
+                ? Cancel
+            </button>
+            <span class="mr-center">
+                Price: <span class="price">@Pizza.GetFormattedTotalPrice()</span>
+            </span>
+            <button class="btn btn-success ml-auto" @onclick="OnConfirm">
+                ?? Add to Order
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dialog-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .dialog {
+        background: white;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .dialog-title {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .dialog-title h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.5rem;
+    }
+
+    .dialog-body {
+        padding: 2rem;
+    }
+
+    .size-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .size-section label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+
+    .size-section input[type="range"] {
+        width: 100%;
+        margin: 0.5rem 0;
+        height: 8px;
+        border-radius: 5px;
+        background: #ddd;
+        outline: none;
+        -webkit-appearance: none;
+    }
+
+    .size-section input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+    }
+
+    .size-label {
+        display: block;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #28a745;
+        margin-top: 0.5rem;
+    }
+
+    .pizza-preview {
+        text-align: center;
+        margin: 1rem 0;
+    }
+
+    .pizza-image {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .dialog-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #545b62;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+    }
+
+    .price {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #28a745;
+    }
+
+    .mr-center {
+        text-align: center;
+        flex: 1;
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
+
+@code {
+    [Parameter]
+    public Pizza Pizza { get; set; } = new();
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnSizeChange { get; set; }
+
+    private async Task OnSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int newSize))
+        {
+            Pizza.Size = newSize;
+            await OnSizeChange.InvokeAsync(newSize);
+            StateHasChanged();
+        }
+    }
+}

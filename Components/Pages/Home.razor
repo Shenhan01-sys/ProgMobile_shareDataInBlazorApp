@@ -1,3 +1,251 @@
 ﻿@page "/"
+@using PizzaList.Services
+@inject PizzaSalesState SalesState
+@implements IDisposable
 
-<h1>Blazing Pizzas</h1>
+<PageTitle>Home</PageTitle>
+
+<div class="home-container">
+    <h1>🍕 Blazing Pizzas</h1>
+    <p class="welcome-text">Selamat datang di aplikasi pizza terbaik!</p>
+    
+    <!-- Sales Dashboard using AppState -->
+    <div class="dashboard">
+        <h2>📊 Dashboard Penjualan Hari Ini</h2>
+        
+        <div class="dashboard-stats">
+            <div class="dashboard-card sales">
+                <div class="card-icon">🍕</div>
+                <div class="card-content">
+                    <span class="card-number">@SalesState.PizzasSoldToday</span>
+                    <span class="card-label">Pizza Terjual</span>
+                </div>
+            </div>
+            
+            <div class="dashboard-card revenue">
+                <div class="card-icon">💰</div>
+                <div class="card-content">
+                    <span class="card-number">@SalesState.TotalRevenue.ToString("C")</span>
+                    <span class="card-label">Total Pendapatan</span>
+                </div>
+            </div>
+            
+            <div class="dashboard-card average">
+                <div class="card-icon">📈</div>
+                <div class="card-content">
+                    <span class="card-number">
+                        @((SalesState.PizzasSoldToday > 0 ? SalesState.TotalRevenue / SalesState.PizzasSoldToday : 0).ToString("C"))
+                    </span>
+                    <span class="card-label">Rata-rata per Pizza</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <button class="btn btn-danger" @onclick="ResetSales">
+                🔄 Reset Penjualan Harian
+            </button>
+            <button class="btn btn-primary" @onclick="NavigateToPizzas">
+                🍕 Lihat Menu Pizza
+            </button>
+        </div>
+        
+        <!-- Recent Activity -->
+        @if (SalesState.RecentSales.Any())
+        {
+            <div class="recent-activity">
+                <h3>🕒 Aktivitas Terbaru</h3>
+                <div class="activity-list">
+                    @foreach (var sale in SalesState.RecentSales.Take(5))
+                    {
+                        <div class="activity-item">
+                            <span class="activity-icon">✅</span>
+                            <span class="activity-text">@sale</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .home-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    
+    .welcome-text {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+    
+    .dashboard {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .dashboard h2 {
+        margin-top: 0;
+        color: #343a40;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .dashboard-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .dashboard-card {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .dashboard-card.sales {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .dashboard-card.revenue {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+    
+    .dashboard-card.average {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+    
+    .card-icon {
+        font-size: 3rem;
+        margin-right: 1rem;
+    }
+    
+    .card-content {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .card-number {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+    }
+    
+    .card-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .control-panel {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+    
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background: #c82333;
+    }
+    
+    .recent-activity {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    
+    .recent-activity h3 {
+        margin-top: 0;
+        color: #495057;
+        margin-bottom: 1rem;
+    }
+    
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .activity-icon {
+        margin-right: 0.75rem;
+        font-size: 1.2rem;
+    }
+    
+    .activity-text {
+        color: #495057;
+    }
+</style>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Subscribe to state changes
+        SalesState.OnChange += StateHasChanged;
+    }
+
+    private void ResetSales()
+    {
+        SalesState.ResetDailySales();
+    }
+
+    private void NavigateToPizzas()
+    {
+        // In a real app, you'd use NavigationManager
+        // For now, this is just a placeholder
+    }
+
+    public void Dispose()
+    {
+        SalesState.OnChange -= StateHasChanged;
+    }
+}

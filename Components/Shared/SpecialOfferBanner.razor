@@ -1,0 +1,43 @@
+@if (!string.IsNullOrEmpty(OfferText))
+{
+    <div class="special-offer-banner">
+        <span class="offer-icon">??</span>
+        <span class="offer-text">@OfferText</span>
+        <span class="offer-icon">??</span>
+    </div>
+}
+
+<style>
+    .special-offer-banner {
+        background: linear-gradient(45deg, #ff6b6b, #feca57);
+        color: white;
+        padding: 0.75rem;
+        text-align: center;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        animation: pulse 2s infinite;
+    }
+    
+    .offer-icon {
+        margin: 0 0.5rem;
+    }
+    
+    .offer-text {
+        font-size: 1.1rem;
+    }
+</style>
+
+<style>
+    @@keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+@code {
+    [CascadingParameter(Name = "SpecialOffer")]
+    public string? OfferText { get; set; }
+}

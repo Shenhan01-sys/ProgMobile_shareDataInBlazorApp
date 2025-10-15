@@ -1,0 +1,193 @@
+@using PizzaList.Models
+@using PizzaList.Services
+@inject OrderState OrderState
+@implements IDisposable
+
+@if (OrderState.Order.Pizzas.Any())
+{
+    <div class="order-summary">
+        <div class="order-header">
+            <h3>?? Current Order</h3>
+            <button class="btn btn-sm btn-outline-danger" @onclick="ClearOrder">
+                Clear Order
+            </button>
+        </div>
+        
+        <div class="order-items">
+            @foreach (var pizza in OrderState.Order.Pizzas)
+            {
+                <div class="order-item">
+                    <div class="item-info">
+                        <span class="item-name">@pizza.Name</span>
+                        <span class="item-size">Size: @pizza.Size"</span>
+                    </div>
+                    <div class="item-actions">
+                        <span class="item-price">@pizza.GetFormattedTotalPrice()</span>
+                        <button class="btn btn-sm btn-outline-danger" @onclick="() => RemoveItem(pizza)">
+                            ?
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <div class="order-total">
+            <strong>Total: @OrderState.Order.GetFormattedTotalPrice()</strong>
+        </div>
+        
+        <div class="order-actions">
+            <button class="btn btn-primary btn-block" @onclick="CheckoutOrder">
+                ?? Checkout (@OrderState.Order.Pizzas.Count items)
+            </button>
+        </div>
+    </div>
+}
+
+<style>
+    .order-summary {
+        background: white;
+        border: 2px solid #28a745;
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .order-header h3 {
+        margin: 0;
+        color: #28a745;
+    }
+
+    .order-items {
+        margin-bottom: 1rem;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border-left: 4px solid #28a745;
+    }
+
+    .item-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .item-name {
+        font-weight: bold;
+        color: #495057;
+    }
+
+    .item-size {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .item-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .item-price {
+        font-weight: bold;
+        color: #28a745;
+    }
+
+    .order-total {
+        text-align: center;
+        padding: 1rem;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .order-actions {
+        text-align: center;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-outline-danger {
+        background: transparent;
+        color: #dc3545;
+        border: 1px solid #dc3545;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        color: white;
+    }
+</style>
+
+@code {
+    protected override void OnInitialized()
+    {
+        OrderState.OnChange += StateHasChanged;
+    }
+
+    private void ClearOrder()
+    {
+        OrderState.ClearOrder();
+    }
+
+    private void RemoveItem(Pizza pizza)
+    {
+        OrderState.RemovePizzaFromOrder(pizza);
+    }
+
+    private void CheckoutOrder()
+    {
+        // TODO: Implement checkout logic
+        // For now, just show a message
+        // You can add navigation to checkout page here
+    }
+
+    public void Dispose()
+    {
+        OrderState.OnChange -= StateHasChanged;
+    }
+}

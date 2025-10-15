@@ -67,12 +67,16 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" />
-        <!-- Tambahkan ini untuk Web API -->
-        <PackageReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Controllers\" />
       <Folder Include="wwwroot\img\pizzas\" />
+    </ItemGroup>
+
+    <!-- Conditional Framework Reference untuk avoid runtime pack errors -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'">
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
 </Project>
