@@ -10,10 +10,10 @@ namespace PizzaList.Data
 {
     public class PizzaStoreContext : DbContext
     {
-        public PizzaStoreContext(DbContextOptions options) : base(options)
+        public PizzaStoreContext(DbContextOptions<PizzaStoreContext> options) : base(options)
         {
         }
 
-        public DbSet<Pizza> SetPizza { get; set; }
+        public DbSet<Pizza> Pizzas { get; set; } // Mengganti nama dari SetPizza menjadi Pizzas untuk konsistensi
     }
 }

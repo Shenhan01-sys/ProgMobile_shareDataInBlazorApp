@@ -5,15 +5,16 @@
     <div class="pizza-content">
         <h3>@Pizza.Name</h3>
         <p>@Pizza.Description</p>
+        <p>ini debug : @Pizza.ImageUrl</p>
         <span class="price">@Pizza.GetFormattedBasePrice()</span>
         @if (ShowBuyButton)
         {
             <div class="button-group">
                 <button class="buy-button quick-buy" @onclick="HandleQuickBuy">
-                    ?? Quick Buy
+                    Quick Buy
                 </button>
                 <button class="buy-button configure-buy" @onclick="HandleConfigureBuy">
-                    ?? Configure
+                    Configure
                 </button>
             </div>
         }
