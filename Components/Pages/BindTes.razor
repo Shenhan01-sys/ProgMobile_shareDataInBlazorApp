@@ -1,0 +1,12 @@
+@page "/bind"
+
+<h1>My favorite pizza is: @favPizza</h1>
+
+<p>
+    Enter your favorite pizza:
+    <input @bind="favPizza" />
+</p>
+
+@code {
+    private string favPizza { get; set; } = "Margherita";
+}

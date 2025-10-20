@@ -51,6 +51,11 @@ else
                     OnConfigureClick="HandleConfigurePizza" />
             }
         </div>
+
+        @if (showingConfigureDialog)
+        {
+            <ConfigurePizzaDialog Pizza="configuringPizza" />
+        }
         
         <!-- Recent Sales Section -->
         @if (SalesState.RecentSales.Any())
@@ -148,6 +153,8 @@ else
 
 @code {
     private List<Pizza>? pizzas;
+    Pizza configuringPizza;
+    bool showingConfigureDialog;
     private string currentSpecialOffer = "Flash Sale: 20% off semua pizza!";
 
     protected override async Task OnInitializedAsync()

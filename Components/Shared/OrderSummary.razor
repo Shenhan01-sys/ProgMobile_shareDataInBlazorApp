@@ -1,4 +1,4 @@
-@using PizzaList.Models
+﻿@using PizzaList.Models
 @using PizzaList.Services
 @inject OrderState OrderState
 @implements IDisposable
@@ -7,7 +7,7 @@
 {
     <div class="order-summary">
         <div class="order-header">
-            <h3>?? Current Order</h3>
+            <h3>Current Order</h3>
             <button class="btn btn-sm btn-outline-danger" @onclick="ClearOrder">
                 Clear Order
             </button>
@@ -24,7 +24,7 @@
                     <div class="item-actions">
                         <span class="item-price">@pizza.GetFormattedTotalPrice()</span>
                         <button class="btn btn-sm btn-outline-danger" @onclick="() => RemoveItem(pizza)">
-                            ?
+                            ⨉
                         </button>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
         
         <div class="order-actions">
             <button class="btn btn-primary btn-block" @onclick="CheckoutOrder">
-                ?? Checkout (@OrderState.Order.Pizzas.Count items)
+                Checkout (@OrderState.Order.Pizzas.Count items)
             </button>
         </div>
     </div>

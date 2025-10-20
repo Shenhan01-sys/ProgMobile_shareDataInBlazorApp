@@ -28,13 +28,13 @@
 
         <div class="dialog-buttons">
             <button class="btn btn-secondary mr-auto" @onclick="OnCancel">
-                ? Cancel
+                Cancel
             </button>
             <span class="mr-center">
                 Price: <span class="price">@Pizza.GetFormattedTotalPrice()</span>
             </span>
             <button class="btn btn-success ml-auto" @onclick="OnConfirm">
-                ?? Add to Order
+                Add to Order
             </button>
         </div>
     </div>
@@ -61,7 +61,8 @@
         width: 90%;
         max-height: 80vh;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        overflow: hidden;
+        display: flex;
+        flex-direction: column;
         animation: slideIn 0.3s ease-out;
     }
 
@@ -79,6 +80,8 @@
 
     .dialog-body {
         padding: 2rem;
+        overflow-y: auto; /* Memungkinkan scroll jika konten terlalu panjang */
+        flex-grow: 1;
     }
 
     .size-section {
